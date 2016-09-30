@@ -9,7 +9,6 @@ def string_2_oneHot(string):
 		for v in np.arange(len(vocab)):
 			if string[x] == vocab[v]:
 				oneHot[x][v] = 1
-	
 	return oneHot
 
 def softmax(x):
@@ -39,10 +38,23 @@ class rNetwork(object):
 			o[t]  = softmax(np.dot(hS[t], self.W_ho))
 		return [o, hS]
 
+	def lossFunc(self, x):
+		L = 0
+
+		o, s = self.forward(x)
+
+		for i in np.arange(len(x)):
+			L += x[i+1]*np.log(o[i])
+
+		L = -L/len(x)
+
 string = "hello"
 np.random.seed(10)
 rnn = rNetwork(string)
 
-o, s = rnn.forward(string_2_oneHot(string))
+x = string_2_oneHot(string)
+o, s = rnn.forward(x[0:(len(x)-1)])
 print o
 print s
+
+
