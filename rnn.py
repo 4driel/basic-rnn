@@ -1,7 +1,10 @@
 import numpy as np
 
+# string2_oneHot
+# returns a one-hot vector of the recieved string #
+###################################################
 def string_2_oneHot(string):
-	vocab = list(set(string))
+	vocab = list(set(string)) #list all different characters inside string
 	oneHot = np.zeros((len(string), len(vocab)))
 	print vocab
 
@@ -11,12 +14,19 @@ def string_2_oneHot(string):
 				oneHot[x][v] = 1
 	return oneHot
 
+# softmax
+# calculates the softmax function to the recieved vector #
+##########################################################
 def softmax(x):
     	e_x = np.exp(x - np.max(x))
     	return e_x / e_x.sum()
 
+# rNewtwork
+# models rnn - character model like#
+####################################
 class rNetwork(object):
-	def __init__(self, string):
+
+	def __init__(self, string, vocab):
 		#Hyper params
 		self.iL = len(list(set(string))) #input size of string
 		self.hL = 10
