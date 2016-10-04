@@ -1,18 +1,18 @@
 import numpy as np
 
-# string2_oneHot
-# returns a one-hot vector of the recieved string #
+# string_2_oneHot
+# returns a one-hot vector of string #
 ###################################################
 def string_2_oneHot(string):
-	vocab = list(set(string)) #list all different characters inside string
-	oneHot = np.zeros((len(string), len(vocab)))
-	print vocab
+    vocab = list(set(string)) #entire character set used on string
+    oneHot = np.zeros((len(string), len(vocab)))
+    print vocab
 
-	for x in np.arange(len(string)):
-		for v in np.arange(len(vocab)):
-			if string[x] == vocab[v]:
-				oneHot[x][v] = 1
-	return oneHot
+    for x in np.arange(len(string)):
+        for v in np.arange(len(vocab)):
+	    if string[x] == vocab[v]:
+		oneHot[x][v] = 1
+    return oneHot
 
 # softmax
 # calculates the softmax function to the recieved vector #
