@@ -1,42 +1,34 @@
 import numpy as np
 
-# string_2_oneHot
-# returns a one-hot vector of string #
-######################################
-def string_2_oneHot(string):
-    vocab = list(set(string)) #entire character set used on string
-    oneHot = np.zeros((len(string), len(vocab)))
-    print vocab
+def oneHot(string, charSet): #returns one-hot vector
+    oneHot = np.zeros((len(string), len(charSet))) #init
 
-    for x in np.arange(len(string)):
-        for v in np.arange(len(vocab)):
-	    if string[x] == vocab[v]:
-		oneHot[x][v] = 1
+    for i in np.arange(len(string)):
+        for c in np.arange(len(charSet)):
+	    if string[i] == charSet[c]:
+		oneHot[i][c] = 1
     return oneHot
 
-# softmax
-# calculates the softmax function to the recieved vector #
-##########################################################
-def softmax(x):
+def getCharSet(string): #returns char set
+    charSet = list(set(string))
+    return charSet
+
+def softmax(x): #calculates softmax function of vector
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
 
-# rNewtwork
-# models rnn - character model like#
-####################################
-class rNetwork(object):
-    def __init__(self, string, vocab):
+class rnn(object): #character-model-like rnn
+    def __init__(self, charSet):
 	#Hyper params
-	self.iL = len(list(set(string))) #input size of string
+	self.iL = len(charSet)
 	self.hL = 10
 	self.oL = self.iL #input and output layers same size
-
 	#Weights
 	self.W_ih = np.random.uniform(-np.sqrt(1/self.iL), -np.sqrt(1/self.iL), (self.iL, self.hL))
 	self.W_hh = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.hL))
 	self.W_ho = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.oL))
 
-    def forward(self, x):
+    def forward(self, x): #forward propagation
 	hS = np.zeros((len(x), self.hL)) #size x array lenght, hidden layer size
 	hS[-1] = np.zeros(self.hL) #initial hidden state
 
@@ -47,21 +39,35 @@ class rNetwork(object):
 	    o[t]  = softmax(np.dot(hS[t], self.W_ho))
 	return [o, hS]
 
-    def lossFunc(self, x):
-	L = 0
+    def lossFunc(self, y, o): # calculate cross-entropy loss
+	sumt = 0
 
-	o, s = self.forward(x)
+	for n in np.arange(len(o[:,0])):
+	    sumt += np.multiply(y[n], np.log(o[n]))
+	loss = -np.sum(sumt/len(o[:,0]))
+	return loss
 
-	for i in np.arange(len(x)):
-	    L += x[i+1]*np.log(o[i])
-
-	    L = -L/len(x)
-
+#define string
 string = "hello"
-np.random.seed(10)
-rnn = rNetwork(string)
+#calc character set
+charSet = getCharSet(string)	
+#get one-hot input and output vectors
+x = oneHot(string[:-1], charSet)
+y = oneHot(string[1:], charSet)
 
-x = string_2_oneHot(string)
-o, s = rnn.forward(x[0:(len(x)-1)])
+#create rnn
+np.random.seed(10)
+rnn = rnn(charSet)
+
+#forward propagation and loss
+o, s = rnn.forward(x)
+loss = rnn.lossFunc(y, o)
+
+print string
+print charSet
+print "y"
+print y
+print "o"
 print o
-print s
+print "loss"
+print loss
