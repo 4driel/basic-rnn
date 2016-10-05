@@ -28,11 +28,16 @@ class rnn(object): #character-model-like rnn
 	self.W_hh = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.hL))
 	self.W_ho = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.oL))
 
+<<<<<<< HEAD
     def forward(self, x): #forward propagation
 	hS = np.zeros((len(x), self.hL)) #size x array lenght, hidden layer size
+=======
+    def forward(self, x):
+	hS = np.zeros((len(x), self.hL)) #initialize hidden state
+>>>>>>> 257d91051af89199fb5d36dc448adc7b115f9856
 	hS[-1] = np.zeros(self.hL) #initial hidden state
 
-	o = np.zeros((len(x), self.oL))
+	o = np.zeros((len(x), self.oL)) #initialize output
 
 	for t in np.arange(len(x)):
 	    hS[t] = np.tanh(np.dot(x[t], self.W_ih) + np.dot(hS[t-1], self.W_hh))
