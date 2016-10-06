@@ -3,7 +3,7 @@ import numpy as np
 def oneHot(string, charSet): #returns one-hot vector
     oneHot = np.zeros((len(string), len(charSet))) #init
 
-    for i in np.arange(len(string)):
+    for i in np.arange(len(string)): #i = string index, c = char set index
         for c in np.arange(len(charSet)):
 	    if string[i] == charSet[c]:
 		oneHot[i][c] = 1
@@ -13,26 +13,27 @@ def getCharSet(string): #returns char set
     charSet = list(set(string))
     return charSet
 
-def softmax(x): #calculates softmax function of vector
+def softmax(x): #calculates softmax function for x
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
 
 class rnn(object): #character-model-like rnn
-    def __init__(self, charSet):
+    def __init__(self, charSet): #inits layer sizes and weights
 	#Hyper params
 	self.iL = len(charSet)
 	self.hL = 10
-	self.oL = self.iL #input and output layers same size
-	#Weights
+	self.oL = self.iL
+	
+	#Weights - init to -1/sqrt(prev-layer)
 	self.W_ih = np.random.uniform(-np.sqrt(1/self.iL), -np.sqrt(1/self.iL), (self.iL, self.hL))
 	self.W_hh = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.hL))
 	self.W_ho = np.random.uniform(-np.sqrt(1/self.hL), -np.sqrt(1/self.hL), (self.hL, self.oL))
 
     def forward(self, x): #forward propagation
-	hS = np.zeros((len(x), self.hL)) #size x array lenght, hidden layer size
-	hS[-1] = np.zeros(self.hL) #initial hidden state
+	hS = np.zeros((len(x), self.hL)) #init hidden state
+	hS[-1] = np.zeros(self.hL) #hidden state @ t-1
 
-	o = np.zeros((len(x), self.oL)) #initialize output
+	o = np.zeros((len(x), self.oL)) #init output
 
 	for t in np.arange(len(x)):
 	    hS[t] = np.tanh(np.dot(x[t], self.W_ih) + np.dot(hS[t-1], self.W_hh))
@@ -46,6 +47,10 @@ class rnn(object): #character-model-like rnn
 	    sumt += np.multiply(y[n], np.log(o[n]))
 	loss = -np.sum(sumt/len(o[:,0]))
 	return loss
+    
+    def bptt(self, y, o):
+	return 1
+	
 
 #define string
 string = "hello"
@@ -71,3 +76,4 @@ print "o"
 print o
 print "loss"
 print loss
+print np.log(len(charSet))
